@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Embarque</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        .form-section, .report-section, .chart-section {
+            margin-top: 30px;
+        }
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select, button {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .report-box, .chart-box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .report-box ul {
+            list-style: none;
+            padding: 0;
+        }
+        .report-box ul li {
+            margin-bottom: 5px;
+        }
+        canvas {
+            max-width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Relatório de Embarque</h1>
+
+        <div class="form-section">
+            <h2>Embarques Diários</h2>
+            <label for="dateTime">Data e Hora:</label>
+            <input type="datetime-local" id="dateTime" value="">
+
+            <label for="localidade">Cidade e Localidade:</label>
+            <select id="localidade">
+                <option value="">Selecione uma localidade</option>
+                <option value="Campo Novo - MT">Campo Novo - MT</option>
+                <option value="Cuiabá - MT">Cuiabá - MT</option>
+                <option value="Novo Mutum - MT">Novo Mutum - MT</option>
+                <option value="Nobres - MT">Nobres - MT</option>
+                <option value="Primavera - MT">Primavera - MT</option>
+                <!-- Adicione todas as outras localidades aqui -->
+            </select>
+
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" id="quantidade" min="1" step="1">
+
+            <button onclick="enviarDados()">Enviar</button>
+        </div>
+
+        <div class="report-section">
+            <h2>Relatório do Dia</h2>
+            <div class="report-box">
+                <ul id="relatorioDia">
+                    <!-- Dados enviados aparecerão aqui -->
+                </ul>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h2>Gráfico de Embarques</h2>
+            <div class="chart-box">
+                <canvas id="graficoEmbarques"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const relatorio = [];
+
+        function enviarDados() {
+            const dateTime = document.getElementById('dateTime').value;
+            const localidade = document.getElementById('localidade').value;
+            const quantidade = document.getElementById('quantidade').value;
+
+            if (!dateTime || !localidade || !quantidade) {
+                alert('Preencha todos os campos.');
+                return;
+            }
+
+            const dados = {
+                dataHora: dateTime,
+                localidade,
+                quantidade: parseInt(quantidade, 10),
+            };
+
+            relatorio.push(dados);
+            atualizarRelatorio();
+            gerarGrafico();
+
+            alert('Dados enviados com sucesso!');
+        }
+
+        function atualizarRelatorio() {
+            const relatorioDia = document.getElementById('relatorioDia');
+            relatorioDia.innerHTML = '';
+
+            relatorio.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${index + 1}. ${item.dataHora} - ${item.localidade} - ${item.quantidade}`;
+                relatorioDia.appendChild(li);
+            });
+        }
+
+        function gerarGrafico() {
+            const ctx = document.getElementById('graficoEmbarques').getContext('2d');
+
+            const labels = relatorio.map(item => item.localidade);
+            const data = relatorio.map(item => item.quantidade);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Embarques',
+                        data,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                }
+            });
+        }
+    </script>
+</body>
+</html>
