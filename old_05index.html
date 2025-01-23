@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Embarque</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        .form-section, .report-section, .chart-section {
+            margin-top: 30px;
+        }
+        .form-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            justify-items: center;
+            align-items: center;
+        }
+        label {
+            font-weight: bold;
+            color: #0056b3;
+            justify-self: start;
+        }
+        input, select, button {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 10px;
+            border: 1px solid #007BFF;
+            border-radius: 8px;
+            transition: box-shadow 0.3s ease;
+        }
+        input:focus, select:focus {
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .report-box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .report-table th, .report-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .report-table th {
+            background-color: #007BFF;
+            color: white;
+        }
+        canvas {
+            max-width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Relatório de Embarque</h1>
+
+        <div class="form-section">
+            <label for="dateTime">Data e Hora:</label>
+            <input type="datetime-local" id="dateTime" value="">
+
+            <label for="localidade">Cidade e Localidade:</label>
+            <select id="localidade">
+                <option value="">Selecione uma localidade</option>
+                <option value="Campo Novo - MT">Campo Novo - MT</option>
+                <option value="Cuiabá - MT">Cuiabá - MT</option>
+                <option value="Novo Mutum - MT">Novo Mutum - MT</option>
+                <option value="Nobres - MT">Nobres - MT</option>
+                <option value="Primavera - MT">Primavera - MT</option>
+                <!-- Adicione todas as outras localidades aqui -->
+            </select>
+
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" id="quantidade" min="1" step="1">
+
+            <button onclick="enviarDados()">Enviar</button>
+        </div>
+
+        <div class="report-section">
+            <h2>Relatório do Dia</h2>
+            <div class="report-box">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Localidade</th>
+                            <th>Q. Embarques</th>
+                        </tr>
+                    </thead>
+                    <tbody id="relatorioDia">
+                        <!-- Dados enviados aparecerão aqui -->
+                    </tbody>
+                </table>
+            </div>
+            <button onclick="baixarRelatorio()">Baixar Relatório</button>
+        </div>
+
+        <div class="chart-section">
+            <h2>Gráfico de Embarques</h2>
+            <div class="chart-box">
+                <canvas id="graficoEmbarques"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const relatorio = [];
+
+        function enviarDados() {
+            const dateTime = document.getElementById('dateTime').value;
+            const localidade = document.getElementById('localidade').value;
+            const quantidade = document.getElementById('quantidade').value;
+
+            if (!dateTime || !localidade || !quantidade) {
+                alert('Preencha todos os campos.');
+                return;
+            }
+
+            const novoDado = { dateTime, localidade, quantidade };
+            relatorio.push(novoDado);
+
+            atualizarRelatorio();
+            alert('Dados enviados com sucesso!');
+        }
+
+        function atualizarRelatorio() {
+            const relatorioDia = document.getElementById('relatorioDia');
+            relatorioDia.innerHTML = '';
+
+            relatorio.forEach((dado) => {
+                const row = document.createElement('tr');
+
+                const cellData = document.createElement('td');
+                cellData.textContent = dado.dateTime;
+                row.appendChild(cellData);
+
+                const cellLocalidade = document.createElement('td');
+                cellLocalidade.textContent = dado.localidade;
+                row.appendChild(cellLocalidade);
+
+                const cellQuantidade = document.createElement('td');
+                cellQuantidade.textContent = dado.quantidade;
+                row.appendChild(cellQuantidade);
+
+                relatorioDia.appendChild(row);
+            });
+        }
+
+        function baixarRelatorio() {
+            const data = relatorio.map(dado => `${dado.dateTime},${dado.localidade},${dado.quantidade}`).join('\n');
+            const blob = new Blob(["Data,Localidade,Quantidade\n" + data], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'relatorio_embarques.csv';
+            a.click();
+
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
