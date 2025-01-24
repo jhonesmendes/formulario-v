@@ -12,7 +12,7 @@
             background-color: #e3e7e2;
         }
         .form-section {
-            width: 90%;
+            width: 70%;
             margin: 20px auto;
             padding: 20px;
             background: white;
@@ -29,10 +29,11 @@
         }
         .container {
             display: grid;
-            column-gap: 50px;
-            \grid-template-columns: auto auto auto auto;
+            grid-column-gap: auto;
+            display: flex;
+            justify-content: center;
             grid-gap: 10px;
-            padding: 10px;
+            margin: 4%;
         }
         
         .chart-section {
@@ -47,13 +48,16 @@
             text-align: center;
             color: #2a352a;
         }
+        h1{
+            font-size: 75px;
+        }
         .form-section, .report-section, .chart-section {
             margin-top: 15px;
         }
         .form-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 9px;
             justify-items: center;
             align-items: center;
         }
@@ -112,9 +116,8 @@
     </style>
 </head>
 <body>
+    <h1>Relatório de Embarque</h1>
     <div class="container">
-        <h1>Relatório de Embarque</h1>
-
         <div class="form-section">
             <label for="dateTime">Data e Hora:</label>
             <input type="datetime-local" id="dateTime" value="">
